@@ -1,0 +1,48 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import RecipeCard from '../components/RecipeCard.astro';
+import ToolCard from '../components/ToolCard.astro';
+import { tfFromGrams, totalG } from '../lib/dough';
+import { toShape } from '../lib/recipe';
+
+const recipes = (await getCollection('recipes')).sort((a, b) => a.data.order - b.data.order);
+
+const cards = recipes.map((r) => {
+  const b = r.data.batches[0]!;
+  // Base-only TF on the card: it is the conventional published figure. The
+  // recipe page shows both readings where a pan wall is involved.
+  const shape = b.target ? toShape(b.target, false) : null;
+  const tf = shape ? tfFromGrams(totalG(b.ingredients) / b.balls, shape) : null;
+  return {
+    slug: r.id,
+    title: r.data.title,
+    blurb: r.data.blurb,
+    category: r.data.category,
+    times: r.data.times,
+    batchCount: r.data.batches.length,
+    tf,
+  };
+});
+---
+
+<BaseLayout
+  title="Pizza Portal"
+  description="Pizza and bread recipes, each with its dough thickness worked out, plus a calculator to scale any of them to the pan you own."
+>
+  <div class="wrap hero">
+    <h1>Pizza Portal</h1>
+    <p class="hero__lede">
+      Recipes for pizza and bread, each with its dough thickness worked out — and
+      a calculator to scale any of them to the pan you actually own.
+    </p>
+  </div>
+
+  <div class="wrap">
+    <h2 class="visually-hidden">Recipes and tools</h2>
+    <ul class="grid" role="list">
+      {cards.map((c) => <li><RecipeCard {...c} /></li>)}
+      <li><ToolCard /></li>
+    </ul>
+  </div>
+</BaseLayout>

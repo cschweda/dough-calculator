@@ -1,0 +1,78 @@
+/* Light is defined on bare :root; dark is what ships by default, because
+   BaseLayout stamps data-theme="dark" on <html>. */
+:root {
+  --bg: #faf7f0;
+  --bg-glow: #f0e4cd;
+  --surface: #ffffff;
+  --surface-raised: #f5f0e5;
+  --border: #ded5c3;
+  --border-strong: #b6a888;
+  --text: #1c1915;
+  --text-muted: #554e42;
+  --accent: #8a5406;
+  --accent-hover: #6b4104;
+  --accent-contrast: #ffffff;
+  --accent-quiet: #f7ecd8;
+  --focus: #0b4fd0;
+  --tier-sourced: #14532d;
+  --tier-sourced-bg: #dcfce7;
+  --tier-extrapolated: #723b06;
+  --tier-extrapolated-bg: #fdf0d5;
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --step-00: clamp(0.78rem, 0.76rem + 0.1vw, 0.85rem);
+  --step-0: clamp(0.95rem, 0.92rem + 0.15vw, 1.05rem);
+  --step-1: clamp(1.12rem, 1.05rem + 0.35vw, 1.35rem);
+  --step-2: clamp(1.4rem, 1.25rem + 0.7vw, 1.9rem);
+  --step-3: clamp(1.85rem, 1.5rem + 1.6vw, 3rem);
+
+  --space-1: 0.35rem;
+  --space-2: 0.6rem;
+  --space-3: 1rem;
+  --space-4: 1.6rem;
+  --space-5: 2.5rem;
+  --space-6: 4rem;
+
+  --radius: 12px;
+  --radius-sm: 7px;
+  --measure: 68ch;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.05), 0 10px 28px -16px rgb(0 0 0 / 0.25);
+}
+
+:root[data-theme="dark"] {
+  --bg: #12100e;
+  --bg-glow: #241a0f;
+  --surface: #1a1714;
+  --surface-raised: #23201a;
+  --border: #322d25;
+  --border-strong: #574d3d;
+  --text: #f4efe5;
+  --text-muted: #b3a897;
+  --accent: #f0ac48;
+  --accent-hover: #ffc470;
+  --accent-contrast: #1a1206;
+  --accent-quiet: #2a2115;
+  --focus: #a9caff;
+  --tier-sourced: #86efac;
+  --tier-sourced-bg: #16281c;
+  --tier-extrapolated: #fcd34d;
+  --tier-extrapolated-bg: #2c2413;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.5), 0 12px 32px -18px rgb(0 0 0 / 0.8);
+}
+
+/* Chart marks. Validated with the dataviz palette validator against each
+   surface: light on #ffffff, dark on #1a1714 — all six checks pass in both.
+   Dark is a selected set from the same ramps, not an automatic flip. */
+:root {
+  --mark-sourced: #0d9488;
+  --mark-extrapolated: #ea580c;
+  --mark-measured: #4f46e5;
+}
+:root[data-theme="dark"] {
+  --mark-sourced: #0d9488;
+  --mark-extrapolated: #d97706;
+  --mark-measured: #6366f1;
+}

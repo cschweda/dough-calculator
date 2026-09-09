@@ -1,0 +1,38 @@
+---
+import { referenceTable } from '../lib/dough';
+import { fmtGrams } from '../lib/format';
+
+interface Props {
+  ozFrom: number;
+  ozTo: number;
+  ozStep: number;
+  diameters: number[];
+}
+const { ozFrom, ozTo, ozStep, diameters } = Astro.props;
+const t = referenceTable({ ozFrom, ozTo, ozStep, diameters });
+---
+
+<div class="scroll-x" tabindex="0" role="region" aria-label="Thickness factor reference table">
+  <table class="ref-table">
+    <caption>
+      Thickness factor in oz/in² for a round pizza. Rows are dough ball weight;
+      columns are finished diameter in inches.
+    </caption>
+    <thead>
+      <tr>
+        <th scope="col" class="num">oz</th>
+        <th scope="col" class="num">grams</th>
+        {t.diameters.map((d) => <th scope="col" class="num">{d}″</th>)}
+      </tr>
+    </thead>
+    <tbody>
+      {t.rows.map((r) => (
+        <tr>
+          <th scope="row" class="num">{r.oz}</th>
+          <td class="num">{fmtGrams(r.g)}</td>
+          {r.tf.map((v) => <td class="num">{v.toFixed(3)}</td>)}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>

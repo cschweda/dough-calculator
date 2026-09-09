@@ -1,0 +1,25 @@
+---
+import { fmtTf } from '../lib/format';
+
+interface Props {
+  slug: string;
+  title: string;
+  blurb: string;
+  category: string;
+  times: { ferment?: string | undefined; rest?: string | undefined; bake?: string | undefined };
+  tf: number | null;
+  batchCount: number;
+}
+const { slug, title, blurb, category, times, tf, batchCount } = Astro.props;
+---
+
+<article class="card">
+  <h2 class="card__title"><a href={`/recipes/${slug}/`}>{title}</a></h2>
+  <p class="card__blurb">{blurb}</p>
+  <p class="card__meta">
+    <span class="chip">{category}</span>
+    {tf != null && <span class="chip chip--tf">{fmtTf(tf)}</span>}
+    <span class="chip">{batchCount} {batchCount === 1 ? 'size' : 'sizes'}</span>
+    {times.bake && <span class="chip">{times.bake}</span>}
+  </p>
+</article>

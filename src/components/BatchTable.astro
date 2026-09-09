@@ -1,0 +1,83 @@
+---
+import { totalG, tfFromGrams, type Ingredient } from '../lib/dough';
+import { fmtGrams } from '../lib/format';
+import { toShape, describeTarget, type RecipeTarget } from '../lib/recipe';
+import TfReadout from './TfReadout.astro';
+
+interface Props {
+  /** Only the first batch is open on load; the rest are hidden in markup so
+      the JS-set state matches the served HTML and nothing shifts. */
+  first?: boolean;
+  batch: {
+    id: string;
+    name: string;
+    yield?: string | undefined;
+    balls: number;
+    note?: string | undefined;
+    target?: RecipeTarget | undefined;
+    ingredients: Ingredient[];
+  };
+}
+const { batch, first = false } = Astro.props;
+
+const total = totalG(batch.ingredients);
+const perBall = total / batch.balls;
+
+const baseShape = batch.target ? toShape(batch.target, false) : null;
+const wallShape = batch.target && batch.target.wallIn > 0 ? toShape(batch.target, true) : null;
+
+const tf = baseShape ? tfFromGrams(perBall, baseShape) : null;
+const wallTf = wallShape ? tfFromGrams(perBall, wallShape) : null;
+---
+
+<section class="batch" data-batch-panel={batch.id} aria-labelledby={`batch-${batch.id}`} hidden={!first}>
+  <h3 id={`batch-${batch.id}`}>{batch.name}</h3>
+  {batch.yield && <p class="batch__yield">{batch.yield}</p>}
+
+  {tf != null && batch.target && (
+    <TfReadout
+      tf={tf}
+      wallTf={wallTf}
+      targetLabel={describeTarget(batch.target)}
+      assumedNote={batch.target.assumed ? (batch.target.note ?? null) : null}
+    />
+  )}
+
+  {batch.note && <p class="batch__note">{batch.note}</p>}
+
+  <div class="scroll-x">
+    <table data-unit="both">
+      <caption class="visually-hidden">Ingredients for {batch.name}</caption>
+      <thead>
+        <tr>
+          <th scope="col">Ingredient</th>
+          <th scope="col" class="num col-weight">Weight</th>
+          <th scope="col" class="col-vol">Volume</th>
+        </tr>
+      </thead>
+      <tbody>
+        {batch.ingredients.map((i) => (
+          <tr>
+            <th scope="row">
+              {i.item}
+              {i.optional && <span class="opt"> (optional)</span>}
+              {i.note && <span class="opt"> — {i.note}</span>}
+            </th>
+            <td class="num col-weight">{fmtGrams(i.g)}</td>
+            <td class="col-vol">{i.vol ?? '—'}</td>
+          </tr>
+        ))}
+      </tbody>
+      <tfoot>
+        <tr>
+          <th scope="row">
+            Total dough
+            {batch.balls > 1 && <span class="opt"> — {batch.balls} balls, {fmtGrams(perBall)} each</span>}
+          </th>
+          <td class="num col-weight">{fmtGrams(total)}</td>
+          <td class="col-vol"></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</section>

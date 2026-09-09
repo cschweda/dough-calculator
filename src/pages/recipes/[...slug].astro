@@ -1,0 +1,121 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BatchTable from '../../components/BatchTable.astro';
+import SegmentedControl from '../../components/SegmentedControl.astro';
+import ScalePanel from '../../components/ScalePanel.astro';
+
+export async function getStaticPaths() {
+  const recipes = await getCollection('recipes');
+  return recipes.map((recipe) => ({ params: { slug: recipe.id }, props: { recipe } }));
+}
+
+const { recipe } = Astro.props;
+const { Content } = await render(recipe);
+const d = recipe.data;
+
+const batchOptions = d.batches.map((b) => ({ value: b.id, label: b.name }));
+if (d.scalable) batchOptions.push({ value: '__scale', label: 'Scale to my pan' });
+
+const first = d.batches[0]!;
+const meta = [d.times.ferment, d.times.rest, d.times.bake].filter(Boolean) as string[];
+---
+
+<BaseLayout title={`${d.title} — Pizza Portal`} description={d.blurb}>
+  <div class="wrap page-head">
+    <p><a href="/">← All recipes</a></p>
+    <h1>{d.title}</h1>
+    <p class="hero__lede">{d.blurb}</p>
+    <p class="card__meta">
+      <span class="chip">{d.category}</span>
+      {d.tags.map((t) => <span class="chip">{t}</span>)}
+      {meta.map((m) => <span class="chip">{m}</span>)}
+    </p>
+  </div>
+
+  <div class="wrap">
+    <h2>Ingredients</h2>
+
+    <div class="controls" id="recipe-controls">
+      <SegmentedControl name="batch" legend="Batch" options={batchOptions} value={batchOptions[0]!.value} />
+      <SegmentedControl
+        name="unit"
+        legend="Units"
+        options={[
+          { value: 'both', label: 'Both' },
+          { value: 'g', label: 'Grams' },
+          { value: 'vol', label: 'Volume' },
+        ]}
+        value="both"
+      />
+      <button type="button" class="btn btn--quiet print-button" id="print-button">Print recipe</button>
+    </div>
+
+    {d.batches.map((batch, i) => <BatchTable batch={batch} first={i === 0} />)}
+
+    {d.scalable && (
+      <ScalePanel
+        ingredients={first.ingredients}
+        defaultDiameter={first.target?.diameterIn ?? 12}
+        defaultWall={first.target?.wallIn ?? 0}
+        defaultBalls={first.balls}
+      />
+    )}
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    <div class="credit">
+      {d.credit && (
+        <p>
+          <strong>{d.credit.text}</strong>
+          {d.credit.url && <> <a href={d.credit.url}>{d.credit.url.replace(/^https?:\/\//, '')}</a></>}
+          {d.credit.donateUrl && <> — <a href={d.credit.donateUrl}>support the author</a></>}
+        </p>
+      )}
+      {d.source && <p>{d.source}</p>}
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  const root = document.getElementById('recipe-controls');
+  if (root) {
+
+    const panels = Array.from(
+      document.querySelectorAll<HTMLElement>('[data-batch-panel]'),
+    );
+    const scalePanel = document.getElementById('scale-panel');
+
+    const showBatch = (id: string) => {
+      const scaling = id === '__scale';
+      panels.forEach((p) => {
+        p.hidden = scaling || p.dataset.batchPanel !== id;
+      });
+      if (scalePanel) scalePanel.hidden = !scaling;
+    };
+
+    const showUnit = (u: string) => {
+      document
+        .querySelectorAll<HTMLTableElement>('table[data-unit]')
+        .forEach((t) => {
+          t.dataset.unit = u;
+        });
+    };
+
+    const firstPanel = panels[0];
+    if (firstPanel?.dataset.batchPanel) showBatch(firstPanel.dataset.batchPanel);
+
+    root.addEventListener('change', (e) => {
+      const t = e.target;
+      if (!(t instanceof HTMLInputElement)) return;
+      if (t.name === 'batch') showBatch(t.value);
+      if (t.name === 'unit') showUnit(t.value);
+    });
+
+    document
+      .getElementById('print-button')
+      ?.addEventListener('click', () => window.print());
+  }
+</script>

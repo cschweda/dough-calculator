@@ -1,0 +1,385 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import StyleScale from '../../components/StyleScale.astro';
+import ReferenceTable from '../../components/ReferenceTable.astro';
+import SegmentedControl from '../../components/SegmentedControl.astro';
+import { BANDS, MEASURED, SOURCE_URL } from '../../lib/styles';
+import { fmtTf } from '../../lib/format';
+
+const sourced = BANDS.filter((b) => b.tier === 'sourced');
+const extrapolated = BANDS.filter((b) => b.tier === 'extrapolated');
+const f = (n: number) => n.toFixed(3).replace(/0$/, '');
+---
+
+<BaseLayout
+  title="Dough thickness calculator — Pizza Portal"
+  description="Work out dough weight, pizza size, or thickness factor for round and rectangular pans, with pan walls and both unit systems."
+>
+  <div class="wrap page-head">
+    <p><a href="/">← All recipes</a></p>
+    <h1>Dough thickness calculator</h1>
+    <p class="hero__lede">
+      Thickness factor ties three things together: how much dough you have, how
+      big the pizza is, and how thick the crust comes out. Give it any two and it
+      gives you the third.
+    </p>
+  </div>
+
+  <div class="wrap">
+    <section class="panel solver" id="solver" aria-labelledby="solver-heading">
+      <h2 id="solver-heading">Solve</h2>
+
+      <div class="fields">
+        <SegmentedControl
+          name="solve"
+          legend="Solve for"
+          options={[
+            { value: 'weight', label: 'Dough weight' },
+            { value: 'size', label: 'Pizza size' },
+            { value: 'tf', label: 'Thickness factor' },
+          ]}
+          value="weight"
+        />
+        <SegmentedControl
+          name="calc-shape"
+          legend="Shape"
+          options={[
+            { value: 'round', label: 'Round' },
+            { value: 'rect', label: 'Rectangular' },
+          ]}
+          value="round"
+        />
+      </div>
+
+      <div class="fields" style="margin-top:1rem">
+        <label class="field" id="c-field-diameter">
+          <span>Diameter (inches)</span>
+          <input type="number" id="c-diameter" min="4" max="36" step="0.25" value="14" />
+        </label>
+        <label class="field" id="c-field-length" hidden>
+          <span>Length (inches)</span>
+          <input type="number" id="c-length" min="4" max="36" step="0.25" value="14" />
+        </label>
+        <label class="field" id="c-field-width">
+          <span>Width (inches)</span>
+          <input type="number" id="c-width" min="4" max="36" step="0.25" value="10" />
+        </label>
+        <label class="field">
+          <span>Dough up the sides (inches)</span>
+          <input type="number" id="c-wall" min="0" max="4" step="0.25" value="0" />
+        </label>
+        <label class="field" id="c-field-style">
+          <span>Style</span>
+          <select id="c-style">
+            {BANDS.map((b) => (
+              <option value={b.id} selected={b.id === 'ny-slice'}>
+                {b.name} ({b.tier === 'sourced' ? 'cited' : 'inferred'})
+              </option>
+            ))}
+            <option value="__custom">Custom thickness factor…</option>
+          </select>
+        </label>
+        <label class="field" id="c-field-tf" hidden>
+          <span>Thickness factor (oz/in²)</span>
+          <input type="number" id="c-tf" min="0.01" max="0.5" step="0.001" value="0.1657" />
+        </label>
+        <label class="field" id="c-field-weight" hidden>
+          <span>Dough per crust (grams)</span>
+          <input type="number" id="c-weight" min="1" max="5000" step="1" value="450" />
+        </label>
+        <label class="field" id="c-field-count">
+          <span>How many crusts</span>
+          <input type="number" id="c-count" min="1" max="48" step="1" value="1" />
+        </label>
+      </div>
+
+      <div id="c-results" aria-live="polite" aria-atomic="true"></div>
+    </section>
+
+    <section aria-labelledby="formula-heading">
+      <h2 id="formula-heading">The formula</h2>
+      <p>
+        Thickness factor is dough weight divided by the area it has to cover.
+        The method is defined in ounces and inches:
+      </p>
+      <ul>
+        <li>Round: <strong>TF = dough weight in oz ÷ (π × r²)</strong></li>
+        <li>Rectangular: <strong>TF = dough weight in oz ÷ (length × width)</strong></li>
+        <li>To convert grams to ounces, divide by 28.35.</li>
+      </ul>
+      <p>
+        Substituting centimetres into a formula written for inches is a
+        well-documented way to get a wrong answer, so every result here is
+        labelled with its unit and shown in both systems. One oz/in² is
+        4.394 g/cm².
+      </p>
+      <h3>Pan walls</h3>
+      <p>
+        For a deep pan, some of the dough goes up the sides, and published
+        figures disagree about whether to count it. Real Deep Dish states its
+        deep dish at {fmtTf(0.1657)} measured on the pan base alone. Counting the
+        1–1.5″ lip that same recipe asks you to pinch up, the identical dough
+        works out between {fmtTf(0.1105)} and {fmtTf(0.1243)} — which lands
+        inside the usual Chicago deep-dish range. Same dough, two conventions.
+        Set a wall height above and both readings are shown.
+      </p>
+    </section>
+
+    <section aria-labelledby="bands-heading">
+      <h2 id="bands-heading">Style ranges</h2>
+      <StyleScale />
+
+      <h3>Cited ranges</h3>
+      <p>
+        Quoted from a list posted by Pete-zza on the{' '}
+        <a href={SOURCE_URL}>pizzamaking.com thickness factor thread</a>.
+      </p>
+      <div class="scroll-x">
+        <table>
+          <caption class="visually-hidden">Cited thickness factor ranges by style</caption>
+          <thead><tr><th scope="col">Style</th><th scope="col" class="num">TF range (oz/in²)</th><th scope="col">Note</th></tr></thead>
+          <tbody>
+            {sourced.map((b) => (
+              <tr>
+                <th scope="row">{b.name}</th>
+                <td class="num">{f(b.min)}–{f(b.max)}</td>
+                <td>{b.note ?? ''}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Inferred ranges</h3>
+      <p>
+        Not in the source list. These extend coverage to styles the original
+        post did not name, and are starting points to adjust as you bake — not
+        published figures.
+      </p>
+      <div class="scroll-x">
+        <table>
+          <caption class="visually-hidden">Inferred thickness factor ranges by style</caption>
+          <thead><tr><th scope="col">Style</th><th scope="col" class="num">TF range (oz/in²)</th><th scope="col">Basis</th></tr></thead>
+          <tbody>
+            {extrapolated.map((b) => (
+              <tr>
+                <th scope="row">{b.name}</th>
+                <td class="num">{f(b.min)}–{f(b.max)}</td>
+                <td>{b.note ?? ''}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Measured from this portal's recipes</h3>
+      <div class="scroll-x">
+        <table>
+          <caption class="visually-hidden">Thickness factors measured from recipes in this portal</caption>
+          <thead><tr><th scope="col">Recipe</th><th scope="col" class="num">TF (oz/in²)</th><th scope="col">Basis</th></tr></thead>
+          <tbody>
+            {MEASURED.map((m) => (
+              <tr>
+                <th scope="row">{m.name}</th>
+                <td class="num">{m.tf.toFixed(4)}</td>
+                <td>{m.basis}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="panel__note">
+        Commercial pizzerias generally run heavier than these figures, because a
+        pizza has to fill its box, survive the toppings, and shrink in the oven.
+      </p>
+    </section>
+
+    <section aria-labelledby="ref-heading">
+      <h2 id="ref-heading">Reference table</h2>
+      <p>
+        Generated from the formula rather than transcribed, so it carries no
+        rounding drift and is not limited to any one published range.
+      </p>
+      <ReferenceTable ozFrom={8} ozTo={35} ozStep={0.5} diameters={[9, 10, 11, 12, 13, 14, 16, 18, 20, 22, 24]} />
+    </section>
+
+    <div class="credit">
+      <p>
+        Method and style ranges from the{' '}
+        <a href={SOURCE_URL}>pizzamaking.com thickness factor thread</a>.
+      </p>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  import {
+    areaIn2, thicknessFactor, tfFromGrams, doughWeightOz, ozToG, gToOz,
+    roundDiameterForArea, rectLengthForArea, type Shape,
+  } from '../../lib/dough';
+  import { fmtGrams, fmtTf, fmtTfMetric, fmtIn } from '../../lib/format';
+  import { bandById, bandMid, bandsFor } from '../../lib/styles';
+
+  const solver = document.getElementById('solver');
+  const out = document.getElementById('c-results');
+
+  if (solver && out) {
+    const $ = (id: string) => document.getElementById(id);
+    const val = (id: string) => Number((($(id) as HTMLInputElement | null)?.value) ?? NaN);
+    const checked = (name: string) =>
+      (document.querySelector(`input[name="${name}"]:checked`) as HTMLInputElement | null)?.value ?? '';
+
+    const esc = (s: string) =>
+      s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    const bandHtml = (tf: number) => {
+      const bands = bandsFor(tf);
+      return bands.length
+        ? `<ul class="tf__bands">${bands
+            .map(
+              (b) =>
+                `<li><span class="tier tier--${b.tier}"><span class="tier__mark">${
+                  b.tier === 'sourced' ? 'cited' : 'inferred'
+                }</span> ${esc(b.name)}</span></li>`,
+            )
+            .join('')}</ul>`
+        : '<p class="tf__metric">Outside every documented style range.</p>';
+    };
+
+    const cell = (label: string, value: string, sub = '') =>
+      `<div><p class="tf__label">${label}</p><p class="tf__value num">${value}</p>` +
+      (sub ? `<p class="tf__metric num">${sub}</p>` : '') +
+      `</div>`;
+
+    const render = () => {
+      const mode = checked('solve');
+      const isRound = checked('calc-shape') === 'round';
+
+      // Show only the inputs this mode actually consumes.
+      ($('c-field-diameter') as HTMLElement).hidden = !isRound;
+      ($('c-field-length') as HTMLElement).hidden = isRound;
+      ($('c-field-width') as HTMLElement).hidden = isRound;
+      ($('c-field-style') as HTMLElement).hidden = mode === 'tf';
+      ($('c-field-weight') as HTMLElement).hidden = mode === 'weight';
+      ($('c-field-count') as HTMLElement).hidden = mode !== 'weight';
+      // Solving for size means the size is the answer, not an input.
+      if (mode === 'size') {
+        ($('c-field-diameter') as HTMLElement).hidden = true;
+        ($('c-field-length') as HTMLElement).hidden = true;
+        ($('c-field-width') as HTMLElement).hidden = isRound;
+      }
+
+      const wall = val('c-wall');
+      if (!Number.isFinite(wall) || wall < 0) {
+        out.innerHTML = '<p class="error">Wall height must be zero or more.</p>';
+        return;
+      }
+
+      const styleId = ($('c-style') as HTMLSelectElement | null)?.value ?? '';
+      const isCustomTf = styleId === '__custom';
+      ($('c-field-tf') as HTMLElement).hidden = mode === 'tf' || !isCustomTf;
+      const band = bandById(styleId);
+      // Target TF comes from the chosen band's midpoint, or straight from the
+      // custom input when someone already knows the number they want.
+      const targetTf = isCustomTf ? val('c-tf') : band ? bandMid(band) : NaN;
+      const haveTarget = Number.isFinite(targetTf) && targetTf > 0;
+
+      const shapeFrom = (withWall: boolean): Shape | null => {
+        const h = withWall ? wall : 0;
+        if (isRound) {
+          const d = val('c-diameter');
+          return Number.isFinite(d) && d > 0 ? { kind: 'round', diameterIn: d, wallIn: h } : null;
+        }
+        const l = val('c-length'), w = val('c-width');
+        return Number.isFinite(l) && l > 0 && Number.isFinite(w) && w > 0
+          ? { kind: 'rect', lengthIn: l, widthIn: w, wallIn: h }
+          : null;
+      };
+
+      const dual = (tfWall: number, tfBase: number) =>
+        cell(`Thickness factor${wall > 0 ? ' — wall counted' : ''}`, fmtTf(tfWall), fmtTfMetric(tfWall)) +
+        (wall > 0 ? cell('Base only', fmtTf(tfBase), fmtTfMetric(tfBase)) : '');
+
+      if (mode === 'weight') {
+        const shape = shapeFrom(true), base = shapeFrom(false);
+        const count = val('c-count');
+        if (!shape || !base || !haveTarget || !Number.isFinite(count) || count < 1) {
+          out.innerHTML =
+            '<p class="error">Enter a positive size, a positive thickness factor, and at least one crust.</p>';
+          return;
+        }
+        const tf = targetTf;
+        const perG = ozToG(doughWeightOz(tf, shape));
+        out.innerHTML =
+          `<div class="tf">` +
+          cell('Dough per crust', fmtGrams(perG), `${(gToOz(perG)).toFixed(2)} oz`) +
+          (count > 1 ? cell(`Total for ${count}`, fmtGrams(perG * count)) : '') +
+          dual(tf, thicknessFactor(gToOz(perG), base)) +
+          `<div><p class="tf__label">Style range</p>${bandHtml(tf)}</div>` +
+          `</div>`;
+        return;
+      }
+
+      if (mode === 'size') {
+        const g = val('c-weight');
+        if (!haveTarget || !Number.isFinite(g) || g <= 0) {
+          out.innerHTML =
+            '<p class="error">Enter a positive dough weight and thickness factor.</p>';
+          return;
+        }
+        const tf = targetTf;
+        const area = gToOz(g) / tf;
+        if (isRound) {
+          const d = roundDiameterForArea(area, wall);
+          const base = { kind: 'round', diameterIn: d, wallIn: 0 } as const;
+          out.innerHTML =
+            `<div class="tf">` +
+            cell('Diameter', fmtIn(d)) +
+            dual(tf, tfFromGrams(g, base)) +
+            `<div><p class="tf__label">Style range</p>${bandHtml(tf)}</div>` +
+            `</div>`;
+        } else {
+          const w = val('c-width');
+          if (!Number.isFinite(w) || w <= 0) {
+            out.innerHTML = '<p class="error">Enter a positive width.</p>';
+            return;
+          }
+          const l = rectLengthForArea(area, w, wall);
+          if (!(l > 0)) {
+            out.innerHTML =
+              '<p class="error">That dough is too light for a pan this wide once the walls are counted. Try a narrower pan or a lower wall.</p>';
+            return;
+          }
+          const base = { kind: 'rect', lengthIn: l, widthIn: w, wallIn: 0 } as const;
+          out.innerHTML =
+            `<div class="tf">` +
+            cell('Length', fmtIn(l), `at ${fmtIn(w)} wide`) +
+            dual(tf, tfFromGrams(g, base)) +
+            `<div><p class="tf__label">Style range</p>${bandHtml(tf)}</div>` +
+            `</div>`;
+        }
+        return;
+      }
+
+      // mode === 'tf'
+      const shape = shapeFrom(true), base = shapeFrom(false);
+      const g = val('c-weight');
+      if (!shape || !base || !Number.isFinite(g) || g <= 0) {
+        out.innerHTML = '<p class="error">Enter a positive size and dough weight.</p>';
+        return;
+      }
+      const tfWall = tfFromGrams(g, shape);
+      const tfBase = tfFromGrams(g, base);
+      out.innerHTML =
+        `<div class="tf">` +
+        dual(tfWall, tfBase) +
+        cell('Area', `${areaIn2(shape).toFixed(1)} in²`) +
+        `<div><p class="tf__label">Style range</p>${bandHtml(wall > 0 ? tfWall : tfBase)}</div>` +
+        `</div>`;
+    };
+
+    solver.addEventListener('input', render);
+    solver.addEventListener('change', render);
+    render();
+  }
+</script>

@@ -1,0 +1,183 @@
+---
+import { BANDS } from '../lib/styles';
+import type { Ingredient } from '../lib/dough';
+
+interface Props {
+  ingredients: Ingredient[];
+  defaultDiameter: number;
+  defaultWall: number;
+  defaultBalls: number;
+}
+const { ingredients, defaultDiameter, defaultWall, defaultBalls } = Astro.props;
+---
+
+<section class="panel scale-panel" id="scale-panel" aria-labelledby="scale-heading" hidden>
+  <h3 id="scale-heading">Scale to my pan</h3>
+  <p>
+    Pick the pan you own and the style you are after. Every ingredient is scaled
+    proportionally from this recipe's own formula.
+  </p>
+
+  <div class="fields">
+    <fieldset class="seg">
+      <legend>Shape</legend>
+      <div class="seg__track">
+        <input type="radio" class="seg__input visually-hidden" name="scale-shape" id="scale-shape-round" value="round" checked />
+        <label class="seg__label" for="scale-shape-round">Round</label>
+        <input type="radio" class="seg__input visually-hidden" name="scale-shape" id="scale-shape-rect" value="rect" />
+        <label class="seg__label" for="scale-shape-rect">Rectangular</label>
+      </div>
+    </fieldset>
+
+    <label class="field" id="field-diameter">
+      <span>Diameter (inches)</span>
+      <input type="number" id="scale-diameter" min="4" max="30" step="0.25" value={defaultDiameter} />
+    </label>
+
+    <label class="field" id="field-length" hidden>
+      <span>Length (inches)</span>
+      <input type="number" id="scale-length" min="4" max="30" step="0.25" value="14" />
+    </label>
+
+    <label class="field" id="field-width" hidden>
+      <span>Width (inches)</span>
+      <input type="number" id="scale-width" min="4" max="30" step="0.25" value="10" />
+    </label>
+
+    <label class="field">
+      <span>Dough up the sides (inches)</span>
+      <input type="number" id="scale-wall" min="0" max="4" step="0.25" value={defaultWall} />
+    </label>
+
+    <label class="field">
+      <span>Style</span>
+      <select id="scale-style">
+        {BANDS.map((b) => (
+          <option value={b.id} selected={b.id === 'ny-slice'}>
+            {b.name} ({b.tier === 'sourced' ? 'cited' : 'inferred'})
+          </option>
+        ))}
+      </select>
+    </label>
+
+    <label class="field">
+      <span>How many crusts</span>
+      <input type="number" id="scale-count" min="1" max="24" step="1" value={defaultBalls} />
+    </label>
+  </div>
+
+  <div id="scale-results" aria-live="polite" aria-atomic="true"></div>
+
+  <p class="panel__note">
+    Volume measures are not shown when scaling — “1¾ cups + 2 Tbsp” has no
+    reliable scaled equivalent. Use a scale.
+  </p>
+
+  <script type="application/json" id="scale-source" set:html={JSON.stringify(ingredients)}></script>
+</section>
+
+<script>
+  import { scaleIngredients, totalG, doughWeightOz, ozToG, tfFromGrams, type Shape, type Ingredient } from '../lib/dough';
+  import { fmtGrams, fmtTf, fmtTfMetric } from '../lib/format';
+  import { bandById, bandMid, bandsFor } from '../lib/styles';
+
+  const panel = document.getElementById('scale-panel');
+  const srcEl = document.getElementById('scale-source');
+  const out = document.getElementById('scale-results');
+  if (panel && srcEl && out) {
+    const source: Ingredient[] = JSON.parse(srcEl.textContent || '[]');
+    const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T | null;
+
+    const num = (id: string): number => {
+      const el = $<HTMLInputElement>(id);
+      return el ? Number(el.value) : NaN;
+    };
+
+    const esc = (s: string) =>
+      s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    const render = () => {
+      const isRound =
+        ($<HTMLInputElement>('scale-shape-round'))?.checked ?? true;
+
+      $('field-diameter')!.hidden = !isRound;
+      $('field-length')!.hidden = isRound;
+      $('field-width')!.hidden = isRound;
+
+      const wall = num('scale-wall');
+      const count = num('scale-count');
+      const styleId = $<HTMLSelectElement>('scale-style')?.value ?? '';
+      const band = bandById(styleId);
+
+      const dims = isRound ? [num('scale-diameter')] : [num('scale-length'), num('scale-width')];
+      const bad =
+        !band ||
+        !Number.isFinite(wall) || wall < 0 ||
+        !Number.isFinite(count) || count < 1 ||
+        dims.some((d) => !Number.isFinite(d) || d <= 0);
+
+      if (bad) {
+        out.innerHTML =
+          '<p class="error">Enter a positive size, a wall of zero or more, and at least one crust.</p>';
+        return;
+      }
+
+      const shape: Shape = isRound
+        ? { kind: 'round', diameterIn: dims[0]!, wallIn: wall }
+        : { kind: 'rect', lengthIn: dims[0]!, widthIn: dims[1]!, wallIn: wall };
+      const baseShape: Shape = isRound
+        ? { kind: 'round', diameterIn: dims[0]!, wallIn: 0 }
+        : { kind: 'rect', lengthIn: dims[0]!, widthIn: dims[1]!, wallIn: 0 };
+
+      const targetTf = bandMid(band!);
+      const perCrustG = ozToG(doughWeightOz(targetTf, shape));
+      const totalTarget = perCrustG * count;
+      const scaled = scaleIngredients(source, totalTarget);
+
+      const achieved = tfFromGrams(perCrustG, shape);
+      const achievedBase = tfFromGrams(perCrustG, baseShape);
+      const bands = bandsFor(achieved);
+
+      const rows = scaled
+        .map(
+          (i) =>
+            `<tr><th scope="row">${esc(i.item)}${i.optional ? '<span class="opt"> (optional)</span>' : ''}</th>` +
+            `<td class="num">${fmtGrams(i.g)}</td></tr>`,
+        )
+        .join('');
+
+      const bandList = bands.length
+        ? `<ul class="tf__bands">${bands
+            .map(
+              (b) =>
+                `<li><span class="tier tier--${b.tier}"><span class="tier__mark">${
+                  b.tier === 'sourced' ? 'cited' : 'inferred'
+                }</span> ${esc(b.name)}</span></li>`,
+            )
+            .join('')}</ul>`
+        : '<p class="tf__metric">Outside every documented style range.</p>';
+
+      out.innerHTML =
+        `<div class="tf">` +
+        `<div><p class="tf__label">Dough per crust</p><p class="tf__value num">${fmtGrams(perCrustG)}</p>` +
+        `<p class="tf__metric num">${fmtGrams(totalTarget)} total for ${count}</p></div>` +
+        `<div><p class="tf__label">Thickness factor${wall > 0 ? ' — wall counted' : ''}</p>` +
+        `<p class="tf__value num">${fmtTf(achieved)}</p><p class="tf__metric num">${fmtTfMetric(achieved)}</p></div>` +
+        (wall > 0
+          ? `<div><p class="tf__label">Base only</p><p class="tf__value num">${fmtTf(achievedBase)}</p>` +
+            `<p class="tf__metric num">${fmtTfMetric(achievedBase)}</p></div>`
+          : '') +
+        `<div><p class="tf__label">Style range</p>${bandList}</div>` +
+        `</div>` +
+        `<div class="scroll-x"><table><caption class="visually-hidden">Scaled ingredients, by weight</caption>` +
+        `<thead><tr><th scope="col">Ingredient</th><th scope="col" class="num">Weight</th></tr></thead>` +
+        `<tbody>${rows}</tbody>` +
+        `<tfoot><tr><th scope="row">Total dough</th><td class="num">${fmtGrams(totalG(scaled))}</td></tr></tfoot>` +
+        `</table></div>`;
+    };
+
+    panel.addEventListener('input', render);
+    panel.addEventListener('change', render);
+    render();
+  }
+</script>

@@ -1,0 +1,31 @@
+---
+// Native radios in a fieldset. Arrow-key navigation and correct screen-reader
+// announcement come free; a button-based reimplementation would have to rebuild
+// both and would get them subtly wrong.
+interface Props {
+  name: string;
+  legend: string;
+  options: Array<{ value: string; label: string }>;
+  value: string;
+}
+const { name, legend, options, value } = Astro.props;
+---
+
+<fieldset class="seg">
+  <legend>{legend}</legend>
+  <div class="seg__track">
+    {options.map((o) => (
+      <>
+        <input
+          type="radio"
+          class="seg__input visually-hidden"
+          name={name}
+          id={`${name}-${o.value}`}
+          value={o.value}
+          checked={o.value === value}
+        />
+        <label class="seg__label" for={`${name}-${o.value}`}>{o.label}</label>
+      </>
+    ))}
+  </div>
+</fieldset>
