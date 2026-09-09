@@ -1,4 +1,4 @@
-# Dough Portal
+# DoughMath
 
 Pizza and bread recipes with the dough maths worked out, plus a calculator that
 scales any of them to the pan you actually own.
