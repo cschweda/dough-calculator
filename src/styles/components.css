@@ -345,3 +345,127 @@ tfoot th, tfoot td { font-weight: 700; border-top: 2px solid var(--border-strong
 }
 .credit p { max-width: none; }
 .credit strong { color: var(--text); }
+
+/* Unit switching. Only applies when JS is running; print re-shows both. */
+html.js table[data-unit="g"] .col-vol { display: none; }
+html.js table[data-unit="vol"] .col-weight { display: none; }
+
+/* ---------- style scale (range plot) ---------- */
+.style-scale { margin: 0 0 var(--space-5); }
+.style-scale figcaption {
+  color: var(--text-muted);
+  font-size: var(--step-00);
+  margin-bottom: var(--space-3);
+  max-width: var(--measure);
+}
+.scale__plot {
+  display: grid;
+  grid-template-columns: minmax(8rem, 15rem) 1fr auto;
+  gap: 0.3rem var(--space-3);
+  align-items: center;
+  position: relative;
+}
+.scale__axis {
+  grid-column: 2;
+  position: relative;
+  height: 1.4rem;
+  border-bottom: 1px solid var(--border);
+}
+.scale__tick {
+  position: absolute;
+  transform: translateX(-50%);
+  font-size: var(--step-00);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.scale__name { font-size: var(--step-00); display: flex; flex-wrap: wrap; gap: 0.4em; align-items: baseline; }
+.scale__track {
+  position: relative;
+  height: 0.85rem;
+  background: var(--surface-raised);
+  border-radius: 4px;
+}
+.scale__bar {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-radius: 4px;
+  /* 2px surface ring so overlapping ranges stay separable */
+  box-shadow: 0 0 0 2px var(--surface);
+}
+.scale__bar--sourced { background: var(--mark-sourced); }
+.scale__bar--extrapolated {
+  background: repeating-linear-gradient(
+    135deg,
+    var(--mark-extrapolated) 0 4px,
+    color-mix(in oklab, var(--mark-extrapolated) 55%, var(--surface)) 4px 8px
+  );
+}
+.scale__range {
+  font-size: var(--step-00);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.scale__guides {
+  grid-column: 2;
+  grid-row: 2 / -1;
+  position: relative;
+  pointer-events: none;
+  align-self: stretch;
+}
+.scale__guide {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  transform: translateX(-1px);
+  background: var(--mark-measured);
+  opacity: 0.9;
+}
+.scale__guide::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -5px;
+  width: 9px;
+  height: 9px;
+  transform: translateX(-50%) rotate(45deg);
+  background: var(--mark-measured);
+  box-shadow: 0 0 0 2px var(--surface);
+}
+.scale__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  list-style: none;
+  padding: 0;
+  margin: var(--space-3) 0 0;
+  font-size: var(--step-00);
+  color: var(--text-muted);
+}
+.scale__legend li { display: flex; align-items: center; gap: 0.45em; max-width: none; }
+.scale__swatch { width: 1.1rem; height: 0.7rem; border-radius: 3px; flex: none; }
+.scale__swatch--sourced { background: var(--mark-sourced); }
+.scale__swatch--extrapolated {
+  background: repeating-linear-gradient(
+    135deg,
+    var(--mark-extrapolated) 0 4px,
+    color-mix(in oklab, var(--mark-extrapolated) 55%, var(--surface)) 4px 8px
+  );
+}
+.scale__swatch--measured { background: var(--mark-measured); width: 0.5rem; }
+
+@media (max-width: 40rem) {
+  .scale__plot { grid-template-columns: 1fr; }
+  .scale__axis, .scale__guides { grid-column: 1; }
+  .scale__guides { display: none; }
+  .scale__name { margin-top: var(--space-2); }
+  .scale__range { margin-bottom: var(--space-2); }
+}
+
+@media (forced-colors: active) {
+  .scale__bar, .scale__swatch { forced-color-adjust: none; border: 1px solid CanvasText; }
+  .scale__bar--extrapolated, .scale__swatch--extrapolated { border-style: dashed; }
+}

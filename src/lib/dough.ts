@@ -121,3 +121,17 @@ export function referenceTable(
   }
   return { diameters, rows };
 }
+
+/**
+ * Inverse of `areaIn2` for a round pan: the diameter enclosing `area`, given the
+ * wall height. Solves πd²/4 + πdh = area for d.
+ */
+export const roundDiameterForArea = (area: number, wallIn = 0): number =>
+  2 * (Math.sqrt(wallIn * wallIn + area / Math.PI) - wallIn);
+
+/**
+ * Inverse of `areaIn2` for a rectangular pan: the length that, with a known
+ * width and wall height, encloses `area`.
+ */
+export const rectLengthForArea = (area: number, widthIn: number, wallIn = 0): number =>
+  (area - 2 * widthIn * wallIn) / (widthIn + 2 * wallIn);

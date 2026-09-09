@@ -62,3 +62,17 @@
   --tier-extrapolated-bg: #2c2413;
   --shadow: 0 1px 2px rgb(0 0 0 / 0.5), 0 12px 32px -18px rgb(0 0 0 / 0.8);
 }
+
+/* Chart marks. Validated with the dataviz palette validator against each
+   surface: light on #ffffff, dark on #1a1714 — all six checks pass in both.
+   Dark is a selected set from the same ramps, not an automatic flip. */
+:root {
+  --mark-sourced: #0d9488;
+  --mark-extrapolated: #ea580c;
+  --mark-measured: #4f46e5;
+}
+:root[data-theme="dark"] {
+  --mark-sourced: #0d9488;
+  --mark-extrapolated: #d97706;
+  --mark-measured: #6366f1;
+}

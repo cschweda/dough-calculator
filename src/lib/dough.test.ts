@@ -114,3 +114,27 @@ describe('referenceTable', () => {
   });
   it('carries the gram equivalent of each row', () => expect(t.rows[0]!.g).toBeCloseTo(226.8, 1));
 });
+
+import { roundDiameterForArea, rectLengthForArea } from './dough';
+
+describe('wall-aware inverse geometry', () => {
+  it('roundDiameterForArea inverts areaIn2 with no wall', () => {
+    const a = areaIn2({ kind: 'round', diameterIn: 14 });
+    near(roundDiameterForArea(a, 0), 14, 6);
+  });
+  it('roundDiameterForArea inverts areaIn2 with a wall', () => {
+    const a = areaIn2({ kind: 'round', diameterIn: 12, wallIn: 1.25 });
+    near(roundDiameterForArea(a, 1.25), 12, 6);
+  });
+  it('rectLengthForArea inverts areaIn2 with no wall', () => {
+    const a = areaIn2({ kind: 'rect', lengthIn: 14, widthIn: 10 });
+    near(rectLengthForArea(a, 10, 0), 14, 6);
+  });
+  it('rectLengthForArea inverts areaIn2 with a wall', () => {
+    const a = areaIn2({ kind: 'rect', lengthIn: 14, widthIn: 10, wallIn: 1 });
+    near(rectLengthForArea(a, 10, 1), 14, 6);
+  });
+  it('solves the size a known dough ball wants: 15.39 oz at TF 0.10 is a 14 inch pizza', () => {
+    near(roundDiameterForArea(15.3938 / 0.1, 0), 14, 3);
+  });
+});

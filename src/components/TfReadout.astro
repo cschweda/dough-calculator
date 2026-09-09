@@ -1,0 +1,54 @@
+---
+import { fmtTf, fmtTfMetric } from '../lib/format';
+import { bandsFor } from '../lib/styles';
+
+interface Props {
+  tf: number;
+  /** Same dough with the pan wall counted. Omit when there is no wall. */
+  wallTf?: number | null;
+  targetLabel?: string;
+  assumedNote?: string | null;
+}
+const { tf, wallTf = null, targetLabel, assumedNote = null } = Astro.props;
+const bands = bandsFor(wallTf ?? tf);
+---
+
+<div class="tf">
+  <div>
+    <p class="tf__label">
+      Thickness factor{wallTf != null && <> — base only</>}
+    </p>
+    <p class="tf__value num">{fmtTf(tf)}</p>
+    <p class="tf__metric num">{fmtTfMetric(tf)}</p>
+  </div>
+
+  {wallTf != null && (
+    <div>
+      <p class="tf__label">With the pan wall counted</p>
+      <p class="tf__value num">{fmtTf(wallTf)}</p>
+      <p class="tf__metric num">{fmtTfMetric(wallTf)}</p>
+    </div>
+  )}
+
+  <div>
+    <p class="tf__label">
+      {targetLabel ? `Style range for ${targetLabel}` : 'Style range'}
+    </p>
+    {bands.length > 0 ? (
+      <ul class="tf__bands">
+        {bands.map((b) => (
+          <li>
+            <span class:list={['tier', `tier--${b.tier}`]}>
+              <span class="tier__mark">{b.tier === 'sourced' ? 'cited' : 'inferred'}</span>
+              {b.name}
+            </span>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p class="tf__metric">Outside every documented style range.</p>
+    )}
+  </div>
+</div>
+
+{assumedNote && <p class="batch__note">{assumedNote}</p>}

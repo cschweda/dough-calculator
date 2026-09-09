@@ -1,0 +1,58 @@
+---
+import { BANDS, MEASURED, SCALE_MIN, SCALE_MAX } from '../lib/styles';
+
+// Row-per-style interval plot. Thirteen ranges overlap heavily, so a single
+// stacked meter would be unreadable; one row each keeps every extent legible.
+// Every row is directly labelled with its exact range, which is why there is no
+// hover tooltip — the values a tooltip would reveal are already on the page.
+const span = SCALE_MAX - SCALE_MIN;
+const pct = (v: number) => ((v - SCALE_MIN) / span) * 100;
+
+const rows = [...BANDS].sort((a, b) => a.min - b.min || a.max - b.max);
+const ticks = [0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18];
+const fmt = (n: number) => n.toFixed(3).replace(/0$/, '');
+---
+
+<figure class="style-scale">
+  <figcaption>
+    Thickness factor in oz/in², from {SCALE_MIN} to {SCALE_MAX}. Each bar is one
+    style's documented range; ranges overlap because styles do. The vertical
+    markers are the recipes in this portal.
+  </figcaption>
+
+  <div class="scale__plot">
+    <div class="scale__axis" aria-hidden="true">
+      {ticks.map((t) => (
+        <span class="scale__tick" style={`left:${pct(t)}%`}>{fmt(t)}</span>
+      ))}
+    </div>
+
+    <div class="scale__guides" aria-hidden="true">
+      {MEASURED.map((m) => <span class="scale__guide" style={`left:${pct(m.tf)}%`}></span>)}
+    </div>
+
+    {rows.map((b) => (
+      <>
+        <span class="scale__name">
+          {b.name}
+          <span class:list={['tier', `tier--${b.tier}`]}>
+            <span class="tier__mark">{b.tier === 'sourced' ? 'cited' : 'inferred'}</span>
+          </span>
+        </span>
+        <span class="scale__track">
+          <span
+            class:list={['scale__bar', `scale__bar--${b.tier}`]}
+            style={`left:${pct(b.min)}%;width:${Math.max(pct(b.max) - pct(b.min), 1.2)}%`}
+          ></span>
+        </span>
+        <span class="scale__range num">{fmt(b.min)}–{fmt(b.max)}</span>
+      </>
+    ))}
+  </div>
+
+  <ul class="scale__legend">
+    <li><span class="scale__swatch scale__swatch--sourced" aria-hidden="true"></span> Cited range</li>
+    <li><span class="scale__swatch scale__swatch--extrapolated" aria-hidden="true"></span> Inferred range</li>
+    <li><span class="scale__swatch scale__swatch--measured" aria-hidden="true"></span> Recipe in this portal</li>
+  </ul>
+</figure>
