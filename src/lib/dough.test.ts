@@ -48,3 +48,69 @@ describe('inverse solvers', () => {
 });
 
 it('exposes the metric conversion that trips people up', () => near(GCM2_PER_OZIN2, 4.3943));
+
+import { totalG, scaleIngredients, bakersPercents, referenceTable, type Ingredient } from './dough';
+
+const RECIPE1_2BALL: Ingredient[] = [
+  { item: 'All-purpose flour', g: 228, isFlour: true }, { item: 'Cornstarch', g: 9 },
+  { item: 'Sugar', g: 10 }, { item: 'Fine salt', g: 4.5 }, { item: 'Instant yeast', g: 3.5 },
+  { item: 'Xanthan gum', g: 1 }, { item: 'Sunflower lecithin powder', g: 2, optional: true },
+  { item: 'Cool water', g: 118 }, { item: 'Olive oil', g: 42 },
+];
+
+describe('scaleIngredients', () => {
+  it('reproduces the printed 4-ball batch exactly when doubled', () => {
+    const scaled = scaleIngredients(RECIPE1_2BALL, 836);
+    const byItem = Object.fromEntries(scaled.map(i => [i.item, Math.round(i.g * 10) / 10]));
+    expect(byItem['All-purpose flour']).toBe(456);
+    expect(byItem['Cornstarch']).toBe(18);
+    expect(byItem['Sugar']).toBe(20);
+    expect(byItem['Fine salt']).toBe(9);
+    expect(byItem['Instant yeast']).toBe(7);
+    expect(byItem['Xanthan gum']).toBe(2);
+    expect(byItem['Sunflower lecithin powder']).toBe(4);
+    expect(byItem['Cool water']).toBe(236);
+    expect(byItem['Olive oil']).toBe(84);
+  });
+  it('hits the requested total', () =>
+    expect(totalG(scaleIngredients(RECIPE1_2BALL, 1234))).toBeCloseTo(1234, 6));
+  it('preserves item order, flags and notes', () => {
+    const scaled = scaleIngredients(RECIPE1_2BALL, 500);
+    expect(scaled.map(i => i.item)).toEqual(RECIPE1_2BALL.map(i => i.item));
+    expect(scaled.find(i => i.item === 'Sunflower lecithin powder')?.optional).toBe(true);
+  });
+  it('drops volume strings, which cannot be scaled', () => {
+    const scaled = scaleIngredients([{ item: 'Flour', g: 100, vol: '3/4 cup' }], 200);
+    expect(scaled[0]!.vol).toBeUndefined();
+  });
+  it('throws rather than silently dividing by zero', () =>
+    expect(() => scaleIngredients([{ item: 'x', g: 0 }], 100)).toThrow());
+});
+
+describe('bakersPercents', () => {
+  it("matches Real Deep Dish's own published percentages", () => {
+    const rdd: Ingredient[] = [
+      { item: 'All Purpose Flour', g: 312.5, isFlour: true }, { item: 'Water', g: 159.3 },
+      { item: 'Vegetable/Corn Oil', g: 54 }, { item: 'IDY Yeast', g: 3.1 },
+      { item: 'Fine Sea Salt', g: 1.4 }, { item: 'Sugar', g: 1 },
+    ];
+    const pct = Object.fromEntries(bakersPercents(rdd).map(p => [p.item, p.pct]));
+    expect(pct['All Purpose Flour']).toBeCloseTo(100, 6);
+    expect(pct['Water']).toBeCloseTo(51, 1);
+    expect(pct['Vegetable/Corn Oil']).toBeCloseTo(17.25, 1);
+    expect(pct['IDY Yeast']).toBeCloseTo(1, 1);
+  });
+  it('throws when no flour is marked', () =>
+    expect(() => bakersPercents([{ item: 'Water', g: 100 }])).toThrow(/flour/i));
+});
+
+describe('referenceTable', () => {
+  const t = referenceTable({ ozFrom: 8, ozTo: 9, ozStep: 0.5, diameters: [10, 12] });
+  it('produces a row per weight step', () => expect(t.rows.map(r => r.oz)).toEqual([8, 8.5, 9]));
+  it('reproduces the published worksheet cells', () => {
+    expect(+t.rows[0]!.tf[0]!.toFixed(3)).toBe(0.102);
+    expect(+t.rows[0]!.tf[1]!.toFixed(3)).toBe(0.071);
+    expect(+t.rows[2]!.tf[0]!.toFixed(3)).toBe(0.115);
+  });
+  it('carries the gram equivalent of each row', () => expect(t.rows[0]!.g).toBeCloseTo(226.8, 1));
+});

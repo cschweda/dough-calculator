@@ -49,3 +49,75 @@ export const doughWeightOz = (tf: number, shape: Shape): number => tf * areaIn2(
 /** Round pizzas only: the diameter that puts `doughOz` at `tf`. */
 export const diameterForTf = (tf: number, doughOz: number): number =>
   2 * Math.sqrt(doughOz / (tf * Math.PI));
+
+export interface Ingredient {
+  item: string;
+  /** Canonical quantity, grams. */
+  g: number;
+  /** Human volume, e.g. "1¾ cups + 2 Tbsp". Display only — cannot be scaled. */
+  vol?: string;
+  optional?: boolean;
+  note?: string;
+  /** Marks the 100% reference for bakers' percentages. Not needed for scaling. */
+  isFlour?: boolean;
+}
+
+export const totalG = (ings: readonly Ingredient[]): number =>
+  ings.reduce((sum, i) => sum + i.g, 0);
+
+/**
+ * Scale a batch to a target total weight. Purely proportional, so it is exact
+ * for any formula-based dough — doubling the pastry-pizza 2-ball batch
+ * reproduces its printed 4-ball batch to the gram.
+ *
+ * Volume strings are deliberately dropped: "1¾ cups + 2 Tbsp" has no meaningful
+ * scaled form, and a plausible-looking wrong volume is worse than none.
+ */
+export function scaleIngredients(
+  ings: readonly Ingredient[],
+  targetTotalG: number,
+): Ingredient[] {
+  const current = totalG(ings);
+  if (current <= 0) throw new Error('Cannot scale a batch with no weight.');
+  const factor = targetTotalG / current;
+  return ings.map(({ vol: _vol, ...rest }) => ({ ...rest, g: rest.g * factor }));
+}
+
+export function bakersPercents(
+  ings: readonly Ingredient[],
+): Array<{ item: string; pct: number }> {
+  const flour = ings.find((i) => i.isFlour);
+  if (!flour) {
+    throw new Error('No ingredient marked isFlour; cannot compute bakers’ percentages.');
+  }
+  return ings.map((i) => ({ item: i.item, pct: (i.g / flour.g) * 100 }));
+}
+
+export interface RefTableOpts {
+  ozFrom: number; ozTo: number; ozStep: number; diameters: readonly number[];
+}
+export interface RefTable {
+  diameters: readonly number[];
+  rows: Array<{ oz: number; g: number; tf: number[] }>;
+}
+
+/**
+ * Generated rather than transcribed from the published worksheet image, which
+ * contains at least one rounding error: 30 oz at 20″ prints as 0.096, but the
+ * true value is 0.09549.
+ */
+export function referenceTable(
+  { ozFrom, ozTo, ozStep, diameters }: RefTableOpts,
+): RefTable {
+  const rows: RefTable['rows'] = [];
+  const steps = Math.round((ozTo - ozFrom) / ozStep);
+  for (let i = 0; i <= steps; i++) {
+    const oz = +(ozFrom + i * ozStep).toFixed(4);
+    rows.push({
+      oz,
+      g: ozToG(oz),
+      tf: diameters.map((d) => thicknessFactor(oz, { kind: 'round', diameterIn: d })),
+    });
+  }
+  return { diameters, rows };
+}
