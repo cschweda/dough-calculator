@@ -27,27 +27,29 @@ const fmt = (n: number) => n.toFixed(3).replace(/0$/, '');
       ))}
     </div>
 
+    <ul class="scale__rows" role="list">
+      {rows.map((b) => (
+        <li class="scale__row">
+          <span class="scale__name">
+            {b.name}
+            <span class:list={['tier', `tier--${b.tier}`]}>
+              <span class="tier__mark">{b.tier === 'sourced' ? 'cited' : 'inferred'}</span>
+            </span>
+          </span>
+          <span class="scale__track">
+            <span
+              class:list={['scale__bar', `scale__bar--${b.tier}`]}
+              style={`left:${pct(b.min)}%;width:${Math.max(pct(b.max) - pct(b.min), 1.2)}%`}
+            ></span>
+          </span>
+          <span class="scale__range num">{fmt(b.min)}–{fmt(b.max)}</span>
+        </li>
+      ))}
+    </ul>
+
     <div class="scale__guides" aria-hidden="true">
       {MEASURED.map((m) => <span class="scale__guide" style={`left:${pct(m.tf)}%`}></span>)}
     </div>
-
-    {rows.map((b) => (
-      <>
-        <span class="scale__name">
-          {b.name}
-          <span class:list={['tier', `tier--${b.tier}`]}>
-            <span class="tier__mark">{b.tier === 'sourced' ? 'cited' : 'inferred'}</span>
-          </span>
-        </span>
-        <span class="scale__track">
-          <span
-            class:list={['scale__bar', `scale__bar--${b.tier}`]}
-            style={`left:${pct(b.min)}%;width:${Math.max(pct(b.max) - pct(b.min), 1.2)}%`}
-          ></span>
-        </span>
-        <span class="scale__range num">{fmt(b.min)}–{fmt(b.max)}</span>
-      </>
-    ))}
   </div>
 
   <ul class="scale__legend">

@@ -1,10 +1,19 @@
 *, *::before, *::after { box-sizing: border-box; }
 
+/* The UA stylesheet's [hidden] rule loses to any author `display`, so an
+   element with `.field { display: flex }` stayed visible when script set
+   `hidden`. Author-level and !important so toggling `hidden` always works. */
+[hidden] { display: none !important; }
+
 html { color-scheme: light; scroll-behavior: smooth; }
 html[data-theme="dark"] { color-scheme: dark; }
 
 body {
   margin: 0;
+  /* The hero's decorative glow deliberately bleeds past the content column.
+     `clip` contains it without creating a scroll container, so the sticky
+     header keeps working. `hidden` would break it. */
+  overflow-x: clip;
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);

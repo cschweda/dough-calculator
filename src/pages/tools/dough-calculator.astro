@@ -26,7 +26,7 @@ const f = (n: number) => n.toFixed(3).replace(/0$/, '');
   </div>
 
   <div class="wrap">
-    <section class="panel solver" id="solver" aria-labelledby="solver-heading" hidden>
+    <section class="panel solver" id="solver" aria-labelledby="solver-heading">
       <h2 id="solver-heading">Solve</h2>
 
       <div class="fields">
@@ -131,7 +131,7 @@ const f = (n: number) => n.toFixed(3).replace(/0$/, '');
 
       <h3>Cited ranges</h3>
       <p>
-        Quoted from a list posted by Pete-zza on the
+        Quoted from a list posted by Pete-zza on the{' '}
         <a href={SOURCE_URL}>pizzamaking.com thickness factor thread</a>.
       </p>
       <div class="scroll-x">
@@ -205,7 +205,7 @@ const f = (n: number) => n.toFixed(3).replace(/0$/, '');
 
     <div class="credit">
       <p>
-        Method and style ranges from the
+        Method and style ranges from the{' '}
         <a href={SOURCE_URL}>pizzamaking.com thickness factor thread</a>.
       </p>
     </div>
@@ -224,7 +224,6 @@ const f = (n: number) => n.toFixed(3).replace(/0$/, '');
   const out = document.getElementById('c-results');
 
   if (solver && out) {
-    solver.hidden = false;
     const $ = (id: string) => document.getElementById(id);
     const val = (id: string) => Number((($(id) as HTMLInputElement | null)?.value) ?? NaN);
     const checked = (name: string) =>

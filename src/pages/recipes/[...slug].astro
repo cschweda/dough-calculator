@@ -36,7 +36,7 @@ const meta = [d.times.ferment, d.times.rest, d.times.bake].filter(Boolean) as st
   <div class="wrap">
     <h2>Ingredients</h2>
 
-    <div class="controls" id="recipe-controls" hidden>
+    <div class="controls" id="recipe-controls">
       <SegmentedControl name="batch" legend="Batch" options={batchOptions} value={batchOptions[0]!.value} />
       <SegmentedControl
         name="unit"
@@ -51,7 +51,7 @@ const meta = [d.times.ferment, d.times.rest, d.times.bake].filter(Boolean) as st
       <button type="button" class="btn btn--quiet print-button" id="print-button">Print recipe</button>
     </div>
 
-    {d.batches.map((batch) => <BatchTable batch={batch} />)}
+    {d.batches.map((batch, i) => <BatchTable batch={batch} first={i === 0} />)}
 
     {d.scalable && (
       <ScalePanel
@@ -82,7 +82,6 @@ const meta = [d.times.ferment, d.times.rest, d.times.bake].filter(Boolean) as st
 <script>
   const root = document.getElementById('recipe-controls');
   if (root) {
-    root.hidden = false;
 
     const panels = Array.from(
       document.querySelectorAll<HTMLElement>('[data-batch-panel]'),

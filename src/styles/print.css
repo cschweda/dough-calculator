@@ -10,7 +10,7 @@
   .skip-link, .print-button, .style-scale, .solver { display: none !important; }
 
   /* Whatever the screen was showing, paper gets everything. */
-  [data-batch-panel] { display: block !important; }
+  [data-batch-panel], [data-batch-panel][hidden] { display: block !important; }
   table[data-unit] .col-vol,
   table[data-unit] .col-weight { display: table-cell !important; }
 

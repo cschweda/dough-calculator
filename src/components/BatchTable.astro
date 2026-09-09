@@ -5,6 +5,9 @@ import { toShape, describeTarget, type RecipeTarget } from '../lib/recipe';
 import TfReadout from './TfReadout.astro';
 
 interface Props {
+  /** Only the first batch is open on load; the rest are hidden in markup so
+      the JS-set state matches the served HTML and nothing shifts. */
+  first?: boolean;
   batch: {
     id: string;
     name: string;
@@ -15,7 +18,7 @@ interface Props {
     ingredients: Ingredient[];
   };
 }
-const { batch } = Astro.props;
+const { batch, first = false } = Astro.props;
 
 const total = totalG(batch.ingredients);
 const perBall = total / batch.balls;
@@ -27,7 +30,7 @@ const tf = baseShape ? tfFromGrams(perBall, baseShape) : null;
 const wallTf = wallShape ? tfFromGrams(perBall, wallShape) : null;
 ---
 
-<section class="batch" data-batch-panel={batch.id} aria-labelledby={`batch-${batch.id}`}>
+<section class="batch" data-batch-panel={batch.id} aria-labelledby={`batch-${batch.id}`} hidden={!first}>
   <h3 id={`batch-${batch.id}`}>{batch.name}</h3>
   {batch.yield && <p class="batch__yield">{batch.yield}</p>}
 
