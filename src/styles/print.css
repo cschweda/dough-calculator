@@ -1,0 +1,34 @@
+@page { size: letter; margin: 0.6in; }
+
+@media print {
+  html, body {
+    background: #fff !important;
+    color: #000 !important;
+    font-size: 11.5pt;
+  }
+  .site-header, .site-footer, .controls, .scale-panel, .theme-toggle,
+  .skip-link, .print-button, .style-scale, .solver { display: none !important; }
+
+  /* Whatever the screen was showing, paper gets everything. */
+  [data-batch-panel] { display: block !important; }
+  table[data-unit] .col-vol,
+  table[data-unit] .col-weight { display: table-cell !important; }
+
+  .batch, table, figure, .tf { break-inside: avoid; }
+  h1, h2, h3 { break-after: avoid; }
+  .prose h2 { margin-top: 14pt; }
+
+  .card, .batch, .panel, .tf, .credit {
+    border-color: #999 !important;
+    background: #fff !important;
+    box-shadow: none !important;
+  }
+  .hero::before { display: none !important; }
+  a { color: #000 !important; text-decoration: underline; }
+  .credit a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    word-break: break-all;
+  }
+  .tier { border: 1px solid #666 !important; background: #fff !important; color: #000 !important; }
+}
