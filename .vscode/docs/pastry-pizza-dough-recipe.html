@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pastry-Style Pizza Dough</title>
+<style>
+  :root {
+    --ink: #2b2b2b;
+    --muted: #6b6b6b;
+    --line: #d8d3c6;
+    --band: #f2e9d0;
+    --gold: #c9a227;
+  }
+  * { box-sizing: border-box; }
+  html { background: #e9e6df; }
+  body {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  .page {
+    max-width: 8.5in;
+    margin: 2rem auto;
+    background: #fff;
+    padding: 0.85in 1in;
+    box-shadow: 0 2px 12px rgba(0,0,0,.08);
+  }
+  h1 { font-size: 30px; margin: 0 0 6px; }
+  .intro { color: var(--muted); font-style: italic; margin: 0 0 14px; }
+  .rule { border: 0; border-top: 2px solid var(--gold); margin: 0 0 22px; }
+  h2 { font-size: 19px; margin: 26px 0 8px; }
+  h2:first-of-type { margin-top: 0; }
+
+  .batches { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  @media (max-width: 720px) { .batches { grid-template-columns: 1fr; } }
+
+  table { width: 100%; border-collapse: collapse; }
+  th, td { border: 1px solid var(--line); padding: 6px 9px; text-align: left; vertical-align: top; }
+  th { background: var(--band); font-weight: bold; }
+  td.n, th.n { text-align: right; white-space: nowrap; }
+  td.v { white-space: nowrap; }
+  .opt { color: var(--muted); font-size: 13px; }
+
+  ol, ul { padding-left: 1.4em; margin: 0; }
+  section p { margin: 0 0 8px; }
+  li { margin: 0 0 7px; }
+
+  footer { margin-top: 26px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); padding-top: 8px; }
+
+  @page { size: letter; margin: 0.6in; }
+  @media print {
+    html { background: #fff; }
+    body { font-size: 12.5px; }
+    .page { max-width: none; margin: 0; padding: 0; box-shadow: none; }
+    h1 { font-size: 25px; }
+    h2 { font-size: 16px; margin-top: 18px; }
+    .batches { gap: 16px; }
+    th, td { padding: 4px 7px; }
+    li { margin-bottom: 4px; }
+    .method, .baking { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<main class="page">
+  <h1>Pastry-Style Pizza Dough</h1>
+  <p class="intro">A home version of the Pizza Snob dough mix — thin, crisp, and buttery. Cold-fermented 48–72 hours. Each dough ball makes one 11" pizza.</p>
+  <hr class="rule">
+
+  <div class="batches">
+    <section>
+      <h2>2 dough balls (~210 g each)</h2>
+      <table>
+        <thead><tr><th>Ingredient</th><th class="n">Weight</th><th>Volume</th></tr></thead>
+        <tbody>
+          <tr><td>All-purpose flour</td><td class="n">228 g</td><td class="v">1¾ cups + 2 Tbsp</td></tr>
+          <tr><td>Cornstarch</td><td class="n">9 g</td><td class="v">1 Tbsp</td></tr>
+          <tr><td>Sugar</td><td class="n">10 g</td><td class="v">2½ tsp</td></tr>
+          <tr><td>Fine salt</td><td class="n">4.5 g</td><td class="v">¾ tsp</td></tr>
+          <tr><td>Instant yeast</td><td class="n">3.5 g</td><td class="v">1 heaping tsp</td></tr>
+          <tr><td>Xanthan gum</td><td class="n">1 g</td><td class="v">¼ tsp</td></tr>
+          <tr><td>Sunflower lecithin powder <span class="opt">(optional)</span></td><td class="n">2 g</td><td class="v">¾ tsp</td></tr>
+          <tr><td>Cool water</td><td class="n">118 g</td><td class="v">½ cup</td></tr>
+          <tr><td>Olive oil <span class="opt">(or other oil; see notes)</span></td><td class="n">42 g</td><td class="v">3 Tbsp</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>4 dough balls (~210 g each)</h2>
+      <table>
+        <thead><tr><th>Ingredient</th><th class="n">Weight</th><th>Volume</th></tr></thead>
+        <tbody>
+          <tr><td>All-purpose flour</td><td class="n">456 g</td><td class="v">3¾ cups</td></tr>
+          <tr><td>Cornstarch</td><td class="n">18 g</td><td class="v">2 Tbsp</td></tr>
+          <tr><td>Sugar</td><td class="n">20 g</td><td class="v">5 tsp</td></tr>
+          <tr><td>Fine salt</td><td class="n">9 g</td><td class="v">1½ tsp</td></tr>
+          <tr><td>Instant yeast</td><td class="n">7 g</td><td class="v">2¼ tsp (1 packet)</td></tr>
+          <tr><td>Xanthan gum</td><td class="n">2 g</td><td class="v">½ tsp</td></tr>
+          <tr><td>Sunflower lecithin powder <span class="opt">(optional)</span></td><td class="n">4 g</td><td class="v">1½ tsp</td></tr>
+          <tr><td>Cool water</td><td class="n">236 g</td><td class="v">1 cup</td></tr>
+          <tr><td>Olive oil <span class="opt">(or other oil; see notes)</span></td><td class="n">84 g</td><td class="v">6 Tbsp</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <section class="method">
+    <h2>Method</h2>
+    <ol>
+      <li>Whisk the flour, cornstarch, sugar, salt, yeast, xanthan gum, and lecithin together thoroughly. The xanthan must be fully dispersed in the dry mix before any liquid is added or it will clump.</li>
+      <li>Stir the olive oil into the water. Pour the liquid into the dry ingredients and mix until no dry flour remains.</li>
+      <li>Turn out and knead 3–4 minutes, just until the dough forms a smooth, tight ball. It will feel stiff and slightly greasy — that is correct. Do not add water.</li>
+      <li>Coat lightly with oil, seal in a container, and refrigerate 48–72 hours (72 recommended).</li>
+      <li>Two hours before baking, divide into balls of about 210 g each, cover, and rest at room temperature. The dough should stretch thin with almost no resistance.</li>
+      <li>Stretch or roll each ball to 11 inches, top, and bake.</li>
+    </ol>
+  </section>
+
+  <section class="baking">
+    <h2>Baking — Breville Pizzaiolo (factory presets)</h2>
+    <p>Use the Wood Fired preset. It runs at 700°F, which matches the 650–750°F range this dough was formulated for.</p>
+    <ul>
+      <li>Preset: <strong>Wood Fired</strong>. Darkness: middle. Timer: 2:00.</li>
+      <li>Preheat fully — wait for the ready indicator, about 20 minutes.</li>
+      <li>Launch the pizza on the peel with a light dusting of flour. Check at 1:30; pull when the rim is blistered and the underside is well browned. Most bakes finish between 1:30 and 2:00.</li>
+      <li>If the bottom is darker than you like, drop Darkness one notch and try again — do not switch presets.</li>
+    </ul>
+    <p>Alternate, for a cracker-style bar crust: <strong>Thin &amp; Crispy</strong> preset (625°F), Darkness middle, Timer 4:00; check at 3:30.</p>
+
+    <h2>Pan Pizza — one bag, Breville deep-dish pan</h2>
+    <p>For a Pizza Hut–style pan pizza, use one full bag (or the 2-ball batch, ~417 g of dough) as a single crust in the Pizzaiolo’s included pan. Note that this is a low-hydration, high-oil dough, so the result will be crisper and a bit denser than a true Pizza Hut crust. For a softer, fluffier crumb, add 20 g (4 tsp) extra water when mixing.</p>
+    <ol>
+      <li>Ferment the dough as usual (48–72 hours cold). Do not divide it.</li>
+      <li>Grease the pan with 2–3 Tbsp butter-flavored Crisco: soften it, spread with your fingers over the base and up the sides, and leave it a little thicker around the outer edge. The crust essentially fries in this layer, which is where the Pizza Hut flavor and crunch come from. Plain shortening or vegetable oil works; butter-flavored adds the familiar note.</li>
+      <li>Press the cold dough into a rough disc, drop it in the pan, and press it out to the edges with oiled fingertips. If it resists, cover and wait 15 minutes, then finish pressing.</li>
+      <li>Cover and proof at room temperature 90 minutes to 2 hours, until noticeably puffy. This replaces the usual 2-hour rest.</li>
+      <li>Top it: a thin layer of sauce, then cheese all the way to the pan edge so it browns against the metal, then toppings.</li>
+      <li>Preheat the Pizzaiolo on the <strong>Pan</strong> preset (475°F), Darkness middle. Bake 12–14 minutes; check at 10. Pull when the edge is deep golden and the cheese is bubbling.</li>
+      <li>Rest 2 minutes in the pan so the crust firms and releases, then slide out onto a rack or board and cut.</li>
+    </ol>
+    <p>If the top browns before the bottom crisps, drop Darkness one notch and add 1–2 minutes. Use the full 4-ball batch for two pan pizzas.</p>
+
+    <h2>Notes</h2>
+    <ul>
+      <li>Mix and ferment as one mass; divide into balls after the fridge, at the start of the room-temperature rest.</li>
+      <li>Freezes well after fermenting: weigh out balls, wrap tightly, freeze. Thaw overnight in the fridge, then give the full 2-hour rest.</li>
+      <li>Flour: standard all-purpose (about 10.5–11.7% protein) is closest to the mix. Bread flour works but gives a chewier, springier crust; if using it, raise the cornstarch to 15 g per 228 g flour (about 1½ Tbsp) and ferment the full 72 hours. Avoid pastry or cake flour.</li>
+      <li>Oil: any oil works at the same weight — 42 g or 84 g. Olive oil (light or “pure” is closer to neutral than extra-virgin) gives a grassy, peppery note; corn oil turns fried and popcorn-like at 700°F; canola is the most neutral. At 18% of flour weight the oil is a foreground flavor, so it is worth testing side by side.</li>
+      <li>Bakers’ ratios, relative to flour: ~52% water, ~18% oil, ~4.5% sugar, ~2% salt, ~1.5% yeast, ~4% cornstarch.</li>
+    </ul>
+  </section>
+
+  <footer>Reverse-engineered from the Pizza Snob label: wheat flour, sugar, modified food starch, salt, yeast, mono &amp; diglycerides, lecithin, xanthan and guar gum. Net wt 257 g per bag; ½ cup water + 3 Tbsp olive oil.</footer>
+</main>
+</body>
+</html>
