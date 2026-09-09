@@ -8,6 +8,7 @@ an entry, amend the commit message it came from.
 
 ## Unreleased
 
+- [`baa088a`](https://github.com/cschweda/dough-calculator/commit/baa088a4d66672cf1834dbb99ae92c167cf55995) 2026-09-09 — Rename the visible brand to DoughMath
 - [`f28dd4b`](https://github.com/cschweda/dough-calculator/commit/f28dd4b6b94e4c811bf5fcf0eea536ff81a10c38) 2026-09-09 — Document the live URL and the TypeScript 6.x ceiling in the README
 - [`0e27ec4`](https://github.com/cschweda/dough-calculator/commit/0e27ec42d9bcf95f96cf9dbd974a5518d797232c) 2026-09-09 — Fix Netlify build: pin TypeScript to 6.x, set real site URL
 - [`bbd4942`](https://github.com/cschweda/dough-calculator/commit/bbd4942cb36e3832b97924498c5d274f3a4532a2) 2026-09-09 — Add Netlify config, Node pin, and a generated changelog

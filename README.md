@@ -178,3 +178,11 @@ Recipes carry their own credit, source, and donation links in frontmatter, and
 those render on the recipe page. The deep-dish recipe is reproduced from
 [Real Deep Dish](https://www.realdeepdish.com/) for personal use — if you bake
 it, consider throwing them a few dollars via the link on that page.
+
+## License
+
+[MIT](LICENSE) © Christopher Schweda.
+
+Recipes reproduced from elsewhere carry their own credit, source, and donation
+links in their frontmatter, and those render on the recipe page — see
+[Data provenance](#data-provenance).
