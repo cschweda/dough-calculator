@@ -3,6 +3,8 @@
 Pizza and bread recipes with the dough maths worked out, plus a calculator that
 scales any of them to the pan you actually own.
 
+Live at **[doughmath.netlify.app](https://doughmath.netlify.app)**.
+
 Built with [Astro](https://astro.build) as a static site. No UI framework, no
 client-side router — the interactive bits are small vanilla-JS islands over
 server-rendered HTML.
@@ -145,8 +147,17 @@ failure whose error message does not mention the Node version.
 `netlify.toml` also sets long-lived immutable caching for `/_astro/*` (those
 filenames are content-hashed, so it is safe) and a set of security headers.
 
-If you add `@astrojs/sitemap` or canonical URLs, set the real `site` value in
-`astro.config.mjs` first — it is currently a placeholder and nothing reads it.
+`astro.config.mjs` sets `site` to the live URL, so `@astrojs/sitemap` and
+canonical tags will produce correct absolute URLs if you add them.
+
+### TypeScript is capped at 6.x
+
+`@astrojs/check` (which powers `npm run check`) declares a peer dependency of
+`typescript@^5.0.0 || ^6.0.0`, and 0.9.10 is its newest release. **Bumping
+TypeScript to 7 breaks the build** — `npm install` fails with `ERESOLVE` on a
+clean checkout, even though an existing `node_modules` keeps working locally
+and hides the problem. Revisit when `@astrojs/check` ships TypeScript 7
+support.
 
 ## Data provenance
 

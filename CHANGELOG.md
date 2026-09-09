@@ -8,6 +8,7 @@ an entry, amend the commit message it came from.
 
 ## Unreleased
 
+- [`0e27ec4`](https://github.com/cschweda/dough-calculator/commit/0e27ec42d9bcf95f96cf9dbd974a5518d797232c) 2026-09-09 — Fix Netlify build: pin TypeScript to 6.x, set real site URL
 - [`bbd4942`](https://github.com/cschweda/dough-calculator/commit/bbd4942cb36e3832b97924498c5d274f3a4532a2) 2026-09-09 — Add Netlify config, Node pin, and a generated changelog
 - [`c77c02a`](https://github.com/cschweda/dough-calculator/commit/c77c02a03c06ce3cc023aa6a8e4d6d98b349edc5) 2026-09-09 — Add README and stop tracking local editor port log
 - [`fc49bc8`](https://github.com/cschweda/dough-calculator/commit/fc49bc8ac63832458a23733f2c63427f02ccf602) 2026-09-09 — Rename project from Pizza Portal to Dough Portal
