@@ -1,6 +1,6 @@
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  site: 'https://dough-portal.local',
+  site: 'https://doughmath.netlify.app',
   build: { inlineStylesheets: 'auto' },
 });

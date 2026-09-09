@@ -8,6 +8,7 @@ an entry, amend the commit message it came from.
 
 ## Unreleased
 
+- [`bbd4942`](https://github.com/cschweda/dough-calculator/commit/bbd4942cb36e3832b97924498c5d274f3a4532a2) 2026-09-09 — Add Netlify config, Node pin, and a generated changelog
 - [`c77c02a`](https://github.com/cschweda/dough-calculator/commit/c77c02a03c06ce3cc023aa6a8e4d6d98b349edc5) 2026-09-09 — Add README and stop tracking local editor port log
 - [`fc49bc8`](https://github.com/cschweda/dough-calculator/commit/fc49bc8ac63832458a23733f2c63427f02ccf602) 2026-09-09 — Rename project from Pizza Portal to Dough Portal
 - [`69c46ca`](https://github.com/cschweda/dough-calculator/commit/69c46ca6de57f954edb2d924b19a4fb90bf1bd6c) 2026-09-09 — Use measured Breville pan dimensions for the pan pizza batch
