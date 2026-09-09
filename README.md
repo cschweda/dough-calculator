@@ -109,6 +109,45 @@ Notes on the schema:
 - **`target.assumed: true`** flags a pan size that was inferred rather than
   stated by the source.
 
+## Changelog
+
+[`CHANGELOG.md`](CHANGELOG.md) lists every tag and every commit, newest first.
+It is **generated from git history** — never edit it by hand.
+
+```bash
+npm run changelog         # regenerate
+npm run changelog:check   # exit 1 if out of date
+```
+
+A `pre-commit` hook keeps it current automatically:
+
+```bash
+npm run hooks:install     # enable  (sets core.hooksPath to .githooks)
+npm run hooks:uninstall   # disable
+```
+
+One caveat worth knowing: the hook runs *before* the commit object exists, so
+the entry for the commit being made lands in the next commit. The committed
+changelog therefore trails `HEAD` by one entry. That is unavoidable — a file
+cannot contain its own commit hash — so run `npm run changelog` right before
+tagging, and the release commit will carry a complete list.
+
+## Deploying
+
+Netlify builds this from `netlify.toml`: `npm run build`, publish `dist/`. No
+adapter or serverless runtime is involved — the output is plain static files.
+
+The Node version is pinned in **both** `.nvmrc` and `netlify.toml`, kept
+identical. Astro 7 requires Node >= 22.12.0 and Netlify picks its own default
+for a repo that does not say otherwise, so leaving this unpinned risks a build
+failure whose error message does not mention the Node version.
+
+`netlify.toml` also sets long-lived immutable caching for `/_astro/*` (those
+filenames are content-hashed, so it is safe) and a set of security headers.
+
+If you add `@astrojs/sitemap` or canonical URLs, set the real `site` value in
+`astro.config.mjs` first — it is currently a placeholder and nothing reads it.
+
 ## Data provenance
 
 The TF method and the style bands come from

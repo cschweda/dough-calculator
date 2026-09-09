@@ -1,0 +1,17 @@
+#!/bin/sh
+# Regenerate CHANGELOG.md and stage it, so every commit ships a current file.
+#
+# This runs before the commit object exists, so the entry for the commit being
+# made lands in the NEXT commit — the changelog trails HEAD by one. Run
+# `npm run changelog` immediately before tagging so a release commit's
+# changelog is complete.
+#
+# Enable:  npm run hooks:install
+# Disable: npm run hooks:uninstall
+set -e
+
+[ -f scripts/changelog.mjs ] || exit 0
+command -v node >/dev/null 2>&1 || exit 0
+
+node scripts/changelog.mjs >/dev/null
+git add CHANGELOG.md

@@ -1,0 +1,33 @@
+# Astro builds a fully static site here — no SSR adapter, so Netlify only needs
+# to run the build and serve dist/.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # Astro 7.3.2 requires Node >=22.12.0. Pinned exactly rather than to the "22"
+  # major so the build cannot drift onto an older 22.x that fails that floor.
+  # Keep in sync with .nvmrc.
+  NODE_VERSION = "22.22.2"
+
+# Fingerprinted assets: the filename changes whenever the content does, so these
+# are safe to cache forever.
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=()"
+    Strict-Transport-Security = "max-age=31536000"
+    # 'unsafe-inline' is required: Astro emits an inline no-flash theme script
+    # and inline module scripts, and the calculator page carries one inline
+    # style attribute. This CSP therefore does not stop inline-script injection
+    # — it blocks loading external scripts, framing, form hijacking, base-tag
+    # injection, and plugin content. See README for the hash-based alternative.
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'; upgrade-insecure-requests"

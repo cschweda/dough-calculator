@@ -3,13 +3,20 @@
   "type": "module",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "changelog": "node scripts/changelog.mjs",
+    "changelog:check": "node scripts/changelog.mjs --check",
+    "hooks:install": "git config core.hooksPath .githooks && echo 'git hooks enabled (.githooks)'",
+    "hooks:uninstall": "git config --unset core.hooksPath && echo 'git hooks disabled'"
   },
   "dependencies": {
     "astro": "^7.3.2"
