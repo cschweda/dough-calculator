@@ -3,3 +3,7 @@ dist/
 .astro/
 .DS_Store
 *.log
+
+# Local editor artifacts — scratch docs and the server-controller port log.
+# Nothing here is shared editor config.
+.vscode/
