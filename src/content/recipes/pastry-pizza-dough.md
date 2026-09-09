@@ -48,9 +48,8 @@ batches:
     target:
       shape: round
       diameterIn: 12
-      wallIn: 1
-      assumed: true
-      note: "The Breville deep-dish pan's diameter is unconfirmed — 12″ is an assumption. Use Scale to my pan to set your own."
+      wallIn: 0
+      note: "Breville's deep-dish pan measures 12″ across and 1.8″ deep. The depth is capacity, not dough: this dough is pressed out to the edge of the base and rises to fill the pan, rather than being pinched thin up the sides, so its thickness factor is measured on the base alone."
     ingredients:
       - { item: "All-purpose flour", g: 228, vol: "1¾ cups + 2 Tbsp", isFlour: true }
       - { item: "Cornstarch", g: 9, vol: "1 Tbsp" }

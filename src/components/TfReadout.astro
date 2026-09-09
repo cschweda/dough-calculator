@@ -7,9 +7,12 @@ interface Props {
   /** Same dough with the pan wall counted. Omit when there is no wall. */
   wallTf?: number | null;
   targetLabel?: string;
-  assumedNote?: string | null;
+  /** Context about the pan this batch is sized for. Shown whether or not the
+      dimensions are assumed; `assumed` only changes how it is flagged. */
+  targetNote?: string | null;
+  assumed?: boolean;
 }
-const { tf, wallTf = null, targetLabel, assumedNote = null } = Astro.props;
+const { tf, wallTf = null, targetLabel, targetNote = null, assumed = false } = Astro.props;
 const bands = bandsFor(wallTf ?? tf);
 ---
 
@@ -51,4 +54,9 @@ const bands = bandsFor(wallTf ?? tf);
   </div>
 </div>
 
-{assumedNote && <p class="batch__note">{assumedNote}</p>}
+{targetNote && (
+  <p class="batch__note">
+    {assumed && <strong>Assumed: </strong>}
+    {targetNote}
+  </p>
+)}

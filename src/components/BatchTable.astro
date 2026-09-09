@@ -39,7 +39,8 @@ const wallTf = wallShape ? tfFromGrams(perBall, wallShape) : null;
       tf={tf}
       wallTf={wallTf}
       targetLabel={describeTarget(batch.target)}
-      assumedNote={batch.target.assumed ? (batch.target.note ?? null) : null}
+      targetNote={batch.target.note ?? null}
+      assumed={batch.target.assumed}
     />
   )}
 

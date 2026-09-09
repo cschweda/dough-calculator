@@ -389,10 +389,14 @@ Deliberately excluded until there is evidence they are needed:
 
 ## 10. Open items
 
-- **Breville Pizzaiolo pan diameter is unconfirmed** and materially changes the
-  pan pizza's TF: 417 g reads 0.130 at 12 inches (deep-dish/Sicilian) but 0.155
-  at 11 inches (Pizza Hut pan). Modelled as a user input with a preset to be
-  confirmed, not guessed.
+- ~~Breville Pizzaiolo pan diameter is unconfirmed.~~ **Resolved 2026-09-09:**
+  measured at 12 inches across and 1.8 inches deep. The depth is pan capacity,
+  not dough geometry — this dough is pressed to the edge of the base and proofs
+  upward rather than being pinched thin up the sides, so the wall term is 0 and
+  the thickness factor is measured on the base. That gives 0.1304 for the 418 g
+  pan batch, inside the Pizza Hut-style pan range the recipe is aiming at. The
+  earlier assumed 1 inch wall reported 0.0978, which was wrong by a whole
+  category.
 - Extrapolated band values in section 4 are starting points to tune with baking.
 - **Recipe #2 is third-party content** from realdeepdish.com. It is reproduced with
   prominent attribution, a link to the source, and the author's donation link, and
